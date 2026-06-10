@@ -35,6 +35,7 @@ interface AppState {
   setSort: (field: SortField, dir: SortDirection) => void;
   setActivityFilter: (type: string) => void;
   deleteTrack: (id: string) => void;
+  importTracks: (tracks: Track[]) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -108,6 +109,14 @@ export const useAppStore = create<AppState>()(
       setActivityFilter: (activityFilter) => set({ activityFilter }),
       deleteTrack: (id) =>
         set((s) => ({ tracks: s.tracks.filter((t) => t.id !== id) })),
+      importTracks: (incoming) =>
+        set((s) => {
+          const merged = [
+            ...incoming,
+            ...s.tracks.filter((e) => !incoming.find((t) => t.id === e.id)),
+          ];
+          return { tracks: merged };
+        }),
     }),
     {
       name: "watchfit-store",

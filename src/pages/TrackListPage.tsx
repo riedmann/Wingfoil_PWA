@@ -1,14 +1,16 @@
 import BluetoothPanel from "../components/BluetoothPanel";
 import TrackFilters from "../components/TrackFilters";
 import TrackCard from "../components/TrackCard";
+import FileImport from "../components/FileImport";
 import { useAppStore } from "../store/useAppStore";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { Track, SortField } from "../types";
-import { Watch } from "lucide-react";
+import { Watch, FolderOpen, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function TrackListPage() {
-  const { tracks, searchQuery, sortField, sortDirection, activityFilter } =
+  const { tracks, searchQuery, sortField, sortDirection, activityFilter, importTracks } =
     useAppStore();
+  const [showImport, setShowImport] = useState(false);
 
   const filtered = useMemo(() => {
     let list: Track[] = [...tracks];
@@ -55,6 +57,25 @@ export default function TrackListPage() {
       {/* BT panel */}
       <BluetoothPanel />
 
+      {/* File import panel */}
+      <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
+        <button
+          onClick={() => setShowImport((v) => !v)}
+          className="w-full flex items-center justify-between px-5 py-4 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-2xl transition-colors"
+        >
+          <span className="flex items-center gap-2">
+            <FolderOpen size={16} className="text-gray-400" />
+            Import GPX / FIT files
+          </span>
+          {showImport ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+        </button>
+        {showImport && (
+          <div className="px-5 pb-5">
+            <FileImport onImport={importTracks} />
+          </div>
+        )}
+      </div>
+
       {/* Filters */}
       {tracks.length > 0 && <TrackFilters />}
 
@@ -78,12 +99,12 @@ export default function TrackListPage() {
 
 function EmptyState() {
   return (
-    <div className="text-center py-16 text-gray-400">
+    <div className="text-center py-12 text-gray-400">
       <div className="text-5xl mb-4">⌚</div>
       <p className="font-medium text-gray-600 mb-1">No tracks yet</p>
       <p className="text-sm">
-        Connect your watch and tap <strong>Sync Tracks</strong> to download your
-        activities.
+        Import <strong>.gpx</strong> or <strong>.fit</strong> files from the
+        Zepp app, or connect your watch above.
       </p>
     </div>
   );
