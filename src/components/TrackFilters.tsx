@@ -12,6 +12,7 @@ const SORT_OPTIONS: { label: string; value: SortField }[] = [
 
 const ACTIVITY_OPTIONS = [
   { label: "All", value: "all" },
+  { label: "🪂 Wingfoiling", value: "wingfoiling" },
   { label: "🏃 Running", value: "running" },
   { label: "🚴 Cycling", value: "cycling" },
   { label: "🚶 Walking", value: "walking" },

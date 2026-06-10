@@ -6,7 +6,10 @@ import type {
   SortField,
   SortDirection,
 } from "../types";
-import { XiaomiBluetoothService } from "../services/bluetooth";
+import {
+  XiaomiBluetoothService,
+  generateDemoTracks,
+} from "../services/bluetooth";
 
 const btService = new XiaomiBluetoothService();
 
@@ -36,6 +39,10 @@ interface AppState {
   setActivityFilter: (type: string) => void;
   deleteTrack: (id: string) => void;
   importTracks: (tracks: Track[]) => void;
+  editTrack: (
+    id: string,
+    patch: Partial<Pick<Track, "name" | "activityType">>,
+  ) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -44,7 +51,7 @@ export const useAppStore = create<AppState>()(
       btStatus: "disconnected",
       downloadProgress: 0,
       statusMessage: "",
-      tracks: [],
+      tracks: generateDemoTracks(),
       searchQuery: "",
       sortField: "startTime",
       sortDirection: "desc",
@@ -109,6 +116,10 @@ export const useAppStore = create<AppState>()(
       setActivityFilter: (activityFilter) => set({ activityFilter }),
       deleteTrack: (id) =>
         set((s) => ({ tracks: s.tracks.filter((t) => t.id !== id) })),
+      editTrack: (id, patch) =>
+        set((s) => ({
+          tracks: s.tracks.map((t) => (t.id === id ? { ...t, ...patch } : t)),
+        })),
       importTracks: (incoming) =>
         set((s) => {
           const merged = [
@@ -120,8 +131,20 @@ export const useAppStore = create<AppState>()(
     }),
     {
       name: "watchfit-store",
-      // Only persist tracks; reset BT state on reload
-      partialize: (s) => ({ tracks: s.tracks }),
+      // Only persist user-imported tracks; demo tracks are always regenerated.
+      partialize: (s) => ({
+        tracks: s.tracks.filter((t) => t.id.startsWith("import-")),
+      }),
+      // On rehydration: fresh demo tracks + any previously imported tracks.
+      merge: (persistedState, currentState) => {
+        const imported = (
+          (persistedState as Partial<AppState>).tracks ?? []
+        ).filter((t) => t.id.startsWith("import-"));
+        return {
+          ...(currentState as AppState),
+          tracks: [...generateDemoTracks(), ...imported],
+        };
+      },
     },
   ),
 );

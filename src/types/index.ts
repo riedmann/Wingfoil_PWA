@@ -13,6 +13,7 @@ export type ActivityType =
   | "walking"
   | "hiking"
   | "swimming"
+  | "wingfoiling"
   | "other";
 
 export interface Track {
@@ -54,3 +55,22 @@ export type SortField =
   | "name"
   | "avgHeartRate";
 export type SortDirection = "asc" | "desc";
+
+/**
+ * A detected jibe segment. Indices reference the `points` array of the parent Track.
+ * A jibe is a ~180° direction reversal; `good` means speed never dropped below
+ * MIN_JIBE_SPEED_KMH (10 km/h) during the manoeuvre.
+ */
+export interface Jibe {
+  startIndex: number;
+  endIndex: number;
+  /** Index of the point with maximum cumulative turn (peak of the manoeuvre). */
+  peakIndex: number;
+  /** True when min speed during the jibe was ≥ 10 km/h */
+  good: boolean;
+  /** Lowest speed recorded during the jibe in km/h */
+  minSpeedKmh: number;
+  /** Total heading change in degrees (~130–220) */
+  totalTurnDeg: number;
+  durationSeconds: number;
+}

@@ -14,7 +14,10 @@ export function formatDistance(meters: number): string {
 }
 
 export function formatPace(track: Track): string {
-  if (track.activityType === "cycling") {
+  if (
+    track.activityType === "cycling" ||
+    track.activityType === "wingfoiling"
+  ) {
     const kmh = (track.avgSpeed ?? 0) * 3.6;
     return `${kmh.toFixed(1)} km/h`;
   }
@@ -35,6 +38,7 @@ export const activityIcons: Record<string, string> = {
   walking: "🚶",
   hiking: "🥾",
   swimming: "🏊",
+  wingfoiling: "🪁",
   other: "⌚",
 };
 
@@ -44,5 +48,6 @@ export const activityColors: Record<string, string> = {
   walking: "bg-green-100 text-green-700",
   hiking: "bg-emerald-100 text-emerald-700",
   swimming: "bg-cyan-100 text-cyan-700",
+  wingfoiling: "bg-sky-100 text-sky-700",
   other: "bg-gray-100 text-gray-700",
 };

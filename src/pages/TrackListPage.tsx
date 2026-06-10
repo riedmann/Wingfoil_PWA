@@ -8,8 +8,14 @@ import type { Track, SortField } from "../types";
 import { Watch, FolderOpen, ChevronDown, ChevronUp } from "lucide-react";
 
 export default function TrackListPage() {
-  const { tracks, searchQuery, sortField, sortDirection, activityFilter, importTracks } =
-    useAppStore();
+  const {
+    tracks,
+    searchQuery,
+    sortField,
+    sortDirection,
+    activityFilter,
+    importTracks,
+  } = useAppStore();
   const [showImport, setShowImport] = useState(false);
 
   const filtered = useMemo(() => {
